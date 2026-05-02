@@ -1,6 +1,6 @@
 # Allow-Swallow Audit Report
 
-**Generated:** 2026-05-02T16:04:03.075Z
+**Generated:** 2026-05-02T16:06:08.154Z
 **Total sites:** 43
 **Sites missing justification:** 0
 
@@ -23,13 +23,13 @@
 
 | Line | Justification |
 |-----:|---------------|
-| 50 | preview/test contexts lack chrome.runtime; "0.0.0" sentinel is the documented fallback |
+| 51 | preview/test contexts lack chrome.runtime; "0.0.0" sentinel is the documented fallback (throttled to avoid test-run flooding) |
 
 ### `src/background/handlers/logging-handler.ts` (1)
 
 | Line | Justification |
 |-----:|---------------|
-| 283 | startup race — Sessions schema may not yet exist; bg-logger forbidden here (recursion) |
+| 299 | startup race — Sessions schema may not yet exist; bg-logger forbidden here (recursion). Throttled to avoid flooding when GET_LOG_STATS is polled. |
 
 ### `src/background/handlers/token-seeder.ts` (3)
 
@@ -61,7 +61,7 @@
 
 | Line | Justification |
 |-----:|---------------|
-| 75 | cache miss is the expected hot path; logging every miss would flood the console |
+| 75 | cache miss is the expected hot path; throttled to avoid console flooding during test runs |
 
 ### `src/background/service-worker-main.ts` (1)
 

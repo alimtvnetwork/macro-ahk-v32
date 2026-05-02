@@ -24,6 +24,22 @@ import { bindOpt, bindReq } from "./handler-guards";
 let dbManager: DbManager | null = null;
 let currentSessionId: number | null = null;
 
+/**
+ * Inline throttle for "Sessions schema not ready" warnings emitted from
+ * `handleGetLogStats`. The Options panel polls log stats on a timer, so
+ * during the startup race window this warning would otherwise repeat
+ * dozens of times per test run. We cannot use `bg-logger` here (would
+ * cause logging→logging recursion), so we keep the budget local.
+ */
+const SESSIONS_WARN_BUDGET = 3;
+let sessionsWarnCount = 0;
+function warnSessionsUnavailableThrottled(err: unknown): void {
+    if (sessionsWarnCount >= SESSIONS_WARN_BUDGET) return;
+    sessionsWarnCount += 1;
+    const suffix = sessionsWarnCount === SESSIONS_WARN_BUDGET ? " (further occurrences suppressed)" : "";
+    console.warn(`[logging-handler] Sessions count unavailable (schema not ready)${suffix}:`, err);
+}
+
 /* ------------------------------------------------------------------ */
 /*  Initialization                                                     */
 /* ------------------------------------------------------------------ */
@@ -280,8 +296,8 @@ export async function handleGetLogStats(): Promise<{ logCount: number; errorCoun
     let sessionCount = 0;
     try {
         sessionCount = countTable(getLogsDb(), "Sessions");
-    } catch (err) { // allow-swallow: startup race — Sessions schema may not yet exist; bg-logger forbidden here (recursion)
-        console.warn("[logging-handler] Sessions count unavailable (schema not ready):", err);
+    } catch (err) { // allow-swallow: startup race — Sessions schema may not yet exist; bg-logger forbidden here (recursion). Throttled to avoid flooding when GET_LOG_STATS is polled.
+        warnSessionsUnavailableThrottled(err);
     }
 
     return { logCount, errorCount, sessionCount };

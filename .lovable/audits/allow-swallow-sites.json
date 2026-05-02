@@ -1,5 +1,5 @@
 {
-  "GeneratedAt": "2026-05-02T16:04:03.078Z",
+  "GeneratedAt": "2026-05-02T16:06:08.156Z",
   "Items": [
     {
       "file": "src/background/handlers/injection-handler.ts",
@@ -21,15 +21,15 @@
     },
     {
       "file": "src/background/handlers/injection-wrapper.ts",
-      "line": 50,
-      "reason": "preview/test contexts lack chrome.runtime; \"0.0.0\" sentinel is the documented fallback",
-      "snippet": "} catch (err) { // allow-swallow: preview/test contexts lack chrome.runtime; \"0.0.0\" sentinel is the documented fallback"
+      "line": 51,
+      "reason": "preview/test contexts lack chrome.runtime; \"0.0.0\" sentinel is the documented fallback (throttled to avoid test-run flooding)",
+      "snippet": "} catch (err) { // allow-swallow: preview/test contexts lack chrome.runtime; \"0.0.0\" sentinel is the documented fallback (throttled to avoid test-run flooding)"
     },
     {
       "file": "src/background/handlers/logging-handler.ts",
-      "line": 283,
-      "reason": "startup race — Sessions schema may not yet exist; bg-logger forbidden here (recursion)",
-      "snippet": "} catch (err) { // allow-swallow: startup race — Sessions schema may not yet exist; bg-logger forbidden here (recursion)"
+      "line": 299,
+      "reason": "startup race — Sessions schema may not yet exist; bg-logger forbidden here (recursion). Throttled to avoid flooding when GET_LOG_STATS is polled.",
+      "snippet": "} catch (err) { // allow-swallow: startup race — Sessions schema may not yet exist; bg-logger forbidden here (recursion). Throttled to avoid flooding when GET_LOG_STATS is polled."
     },
     {
       "file": "src/background/handlers/token-seeder.ts",
@@ -100,8 +100,8 @@
     {
       "file": "src/background/script-resolver.ts",
       "line": 75,
-      "reason": "cache miss is the expected hot path; logging every miss would flood the console",
-      "snippet": "} catch (err) { // allow-swallow: cache miss is the expected hot path; logging every miss would flood the console"
+      "reason": "cache miss is the expected hot path; throttled to avoid console flooding during test runs",
+      "snippet": "} catch (err) { // allow-swallow: cache miss is the expected hot path; throttled to avoid console flooding during test runs"
     },
     {
       "file": "src/background/service-worker-main.ts",
