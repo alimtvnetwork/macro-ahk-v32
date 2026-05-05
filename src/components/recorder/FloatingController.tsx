@@ -9,7 +9,7 @@
  *   • Expanded — Compact + space for future panels (last captured step,
  *                quick-actions). MVP renders the chips only.
  *
- * Position: per-session top-right (no drag in MVP). Mode persists in
+ * Position: draggable with bottom-right default. Mode persists in
  * `chrome.storage.local` via a tiny adapter so the user's preference
  * survives reloads. Phase + dispatchers come from
  * {@link useRecordingSession} so this component is purely presentational.
@@ -117,6 +117,7 @@ function useElapsedTicker(startedAt: string, isRunning: boolean): string {
 /*  Component                                                          */
 /* ------------------------------------------------------------------ */
 
+// eslint-disable-next-line max-lines-per-function, sonarjs/cognitive-complexity -- consolidated recorder controller state machine
 export function FloatingController(props: FloatingControllerProps): JSX.Element {
     const { session, activeStepGroupName, activeSubGroupName, onStart, onPause, onResume, onStop, initialMode } = props;
 
@@ -329,6 +330,7 @@ export function FloatingController(props: FloatingControllerProps): JSX.Element 
 /*  Hotkey quick-add panel                                              */
 /* ------------------------------------------------------------------ */
 
+// eslint-disable-next-line max-lines-per-function -- compact inline form keeps hotkey capture behavior co-located
 function HotkeyQuickAdd(props: { onClose: () => void }): JSX.Element {
     const lib = useStepLibrary();
     const { selection } = useRecorderSelection("controller");
@@ -456,6 +458,7 @@ function ToolToggle(props: {
 /*  Subcomponents                                                      */
 /* ------------------------------------------------------------------ */
 
+// eslint-disable-next-line max-lines-per-function -- shell markup is intentionally kept with drag wiring
 function FloatingShell(props: {
     mode: ControllerMode;
     onModeChange: (m: ControllerMode) => void;
