@@ -542,13 +542,13 @@ const OptionsPage = () => {
                 <StorageBrowserView />
               ) : selection.section === "library" ? (
                 <LibraryView />
-              ) : selection.section === "step-groups" ? (
+              ) : selection.section === SECTION_STEP_GROUPS ? (
                 <StepGroupsSection
                   view={stepGroupView}
                   onViewChange={(v: "tree" | "list") => {
                     setStepGroupView(v);
                     // Keep the URL in sync so refresh / share preserves the sub-view.
-                    const nextHash = v === "list" ? "step-groups-list" : "step-groups";
+                    const nextHash = v === "list" ? HASH_STEP_GROUPS_LIST : SECTION_STEP_GROUPS;
                     if (window.location.hash !== `#${nextHash}`) {
                       history.replaceState(null, "", `#${nextHash}`);
                     }
