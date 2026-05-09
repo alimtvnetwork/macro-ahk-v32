@@ -162,7 +162,7 @@ async function main() {
     const compatOutPath = join(distDir, "instruction.compat.json");
 
     if (!existsSync(tsPath)) {
-        console.log(`ℹ No instruction.ts in ${folderArg}/src/ — skipping`);
+        console.log(`[INFO] No instruction.ts in ${folderArg}/src/ - skipping`);
         return;
     }
 
@@ -183,11 +183,11 @@ async function main() {
     writeFileSync(canonicalOutPath, JSON.stringify(canonical, null, 2) + "\n", "utf-8");
     writeFileSync(compatOutPath, JSON.stringify(compat, null, 2) + "\n", "utf-8");
 
-    console.log(`✅ Compiled instruction.json         → ${canonicalOutPath} (PascalCase, canonical)`);
-    console.log(`✅ Compiled instruction.compat.json  → ${compatOutPath} (camelCase, transitional)`);
+    console.log(`[OK] Compiled instruction.json         -> ${canonicalOutPath} (PascalCase, canonical)`);
+    console.log(`[OK] Compiled instruction.compat.json  -> ${compatOutPath} (camelCase, transitional)`);
 }
 
 main().catch((err) => {
-    console.error("❌ compile-instruction failed:", err);
+    console.error("[FAIL] compile-instruction failed:", err);
     process.exit(1);
 });
