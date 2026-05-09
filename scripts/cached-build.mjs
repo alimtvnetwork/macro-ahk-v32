@@ -94,7 +94,7 @@ function flagAll(prefix) {
 
 const scriptName = flagValue("--name=");
 if (!scriptName) fail("Missing required --name=<scriptName>.");
-const buildMode = flagValue("--mode=") ?? "production";
+const buildMode = flagValue("--mode=") ?? process.env.BUILD_MODE ?? "production";
 const extraInputs = flagAll("--extra-input=");
 
 const projectDir = path.join(REPO_ROOT, "standalone-scripts", scriptName);
