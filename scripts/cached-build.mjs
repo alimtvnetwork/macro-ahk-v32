@@ -251,7 +251,7 @@ if (cacheHit()) {
     clearDir(distDir);
     copyDirSync(cacheDistPath, distDir);
     logHeader("HIT");
-    console.log(`           restored dist/ from cache in ${Date.now() - restoreStart}ms — skipped tsc + vite`);
+    console.log(`           restored dist/ from cache in ${Date.now() - restoreStart}ms - skipped tsc + vite`);
     process.exit(0);
 }
 
@@ -261,13 +261,13 @@ if (cacheHit()) {
 
 if (NO_CACHE) {
     logHeader("BYPASS");
-    console.log(`           STANDALONE_BUILD_NO_CACHE=1 — running build, not writing cache`);
+    console.log(`           STANDALONE_BUILD_NO_CACHE=1 - running build, not writing cache`);
 } else if (FORCE_REBUILD) {
     logHeader("FORCE");
-    console.log(`           STANDALONE_BUILD_FORCE=1 — running build, will overwrite cache`);
+    console.log(`           STANDALONE_BUILD_FORCE=1 - running build, will overwrite cache`);
 } else {
     logHeader("MISS");
-    console.log(`           running build → will write cache on success`);
+    console.log(`           running build -> will write cache on success`);
 }
 
 const buildStart = Date.now();
@@ -283,7 +283,7 @@ if (child.error) {
     process.exit(2);
 }
 if (child.status !== 0) {
-    console.error(`[cache] build command exited with status ${child.status} — NOT writing cache`);
+    console.error(`[cache] build command exited with status ${child.status} - NOT writing cache`);
     process.exit(child.status ?? 1);
 }
 const buildMs = Date.now() - buildStart;
@@ -298,7 +298,7 @@ if (NO_CACHE) {
 }
 
 if (!fs.existsSync(distDir)) {
-    console.error(`[cache] build succeeded but dist/ is missing at ${distDir} — refusing to write empty cache`);
+    console.error(`[cache] build succeeded but dist/ is missing at ${distDir} - refusing to write empty cache`);
     process.exit(0); // build itself succeeded, downstream gate will catch missing dist
 }
 
