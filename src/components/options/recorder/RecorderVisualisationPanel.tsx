@@ -55,6 +55,29 @@ export default function RecorderVisualisationPanel({ projectSlug }: Props) {
     const [selectedStepId, setSelectedStepId] = useState<number | null>(null);
     const [selectors, setSelectors] = useState<ReadonlyArray<SelectorRow>>([]);
     const [selectorsLoading, setSelectorsLoading] = useState(false);
+    const [selfTestRunning, setSelfTestRunning] = useState(false);
+
+    const handleSelfTest = useCallback(async () => {
+        setSelfTestRunning(true);
+        try {
+            const result = await runRecorderSelfTest(projectSlug);
+            await reload();
+            toast.success(
+                `Self-test passed — wrote StepId ${result.InsertedStepId}, verified, cleaned up (${result.DurationMs}ms)`,
+            );
+        } catch (err) {
+            const phase = err instanceof RecorderSelfTestError ? err.Phase : "unknown";
+            const msg = err instanceof Error ? err.message : "Self-test failed";
+            toast.error(`Recorder self-test failed (${phase}): ${msg}`);
+            logError(
+                "RecorderVisualisationPanel.selfTest",
+                `runRecorderSelfTest failed at phase='${phase}' for project='${projectSlug}': ${msg}`,
+                err,
+            );
+        } finally {
+            setSelfTestRunning(false);
+        }
+    }, [projectSlug, reload]);
 
     /* Auto-select the first Step when data loads / refreshes. */
     useEffect(() => {
