@@ -164,12 +164,26 @@ export function mountRecorderToolbar(
     projectText.textContent = options.ProjectSlug;
     projectChip.append(projectDot, projectText);
 
+    const healthChip = document.createElement("span");
+    healthChip.className = "health";
+    healthChip.setAttribute("aria-label", "Recorder health");
+    const healthDot = document.createElement("span");
+    healthDot.className = "hdot";
+    const healthText = document.createElement("span");
+    healthText.className = "htext";
+    const healthSep = document.createElement("span");
+    healthSep.className = "sep";
+    healthSep.textContent = "·";
+    const healthCapture = document.createElement("span");
+    healthCapture.className = "muted";
+    healthChip.append(healthDot, healthText, healthSep, healthCapture);
+
     const startBtn = makeButton("start", "Start");
     const pauseBtn = makeButton("pause", "Pause");
     const stopBtn  = makeButton("stop", "Stop");
 
-    bar.append(phaseLabel, projectChip, startBtn, pauseBtn, stopBtn);
-    root.appendChild(bar);
+    bar.append(phaseLabel, projectChip, healthChip, startBtn, pauseBtn, stopBtn);
+    root.appendChild(host === host ? bar : bar);
     container.appendChild(host);
 
     function dispatch(action: RecorderAction): void {
