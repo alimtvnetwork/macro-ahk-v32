@@ -23,7 +23,8 @@ import { RecorderStepGraph } from "./RecorderStepGraph";
 import { RecorderStepDetail } from "./RecorderStepDetail";
 import { RecorderEmptyState } from "./RecorderEmptyState";
 import { downloadRecorderExport, type ExportFormat } from "./recorder-export";
-import { Loader2, Database, Download } from "lucide-react";
+import { runRecorderSelfTest, RecorderSelfTestError } from "./recorder-self-test";
+import { Loader2, Database, Download, FlaskConical } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
