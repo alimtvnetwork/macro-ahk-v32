@@ -21,8 +21,16 @@ import {
 import { sendMessage } from "@/lib/message-client";
 import { RecorderStepGraph } from "./RecorderStepGraph";
 import { RecorderStepDetail } from "./RecorderStepDetail";
-import { Loader2, Database } from "lucide-react";
+import { downloadRecorderExport, type ExportFormat } from "./recorder-export";
+import { Loader2, Database, Download } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { toast } from "sonner";
 
 interface Props {
