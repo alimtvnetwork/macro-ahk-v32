@@ -106,6 +106,21 @@ const TOOLBAR_CSS = `
     70%  { box-shadow: 0 0 0 6px rgba(239,68,68,0); }
     100% { box-shadow: 0 0 0 0 rgba(239,68,68,0); }
 }
+.health {
+    align-self: center; display: inline-flex; align-items: center; gap: 8px;
+    padding: 4px 8px; border-radius: 6px;
+    background: #0b1220; color: #cbd5e1;
+    font-size: 11px; font-variant-numeric: tabular-nums;
+    border: 1px solid #1f2937;
+}
+.health .hdot {
+    width: 6px; height: 6px; border-radius: 50%; background: #64748b;
+}
+.health[data-status="ok"]    .hdot { background: #22c55e; }
+.health[data-status="warn"]  .hdot { background: #f59e0b; }
+.health[data-status="error"] .hdot { background: #ef4444; }
+.health .sep { opacity: .4; }
+.health .muted { color: #94a3b8; }
 `;
 
 /* ------------------------------------------------------------------ */
@@ -149,11 +164,25 @@ export function mountRecorderToolbar(
     projectText.textContent = options.ProjectSlug;
     projectChip.append(projectDot, projectText);
 
+    const healthChip = document.createElement("span");
+    healthChip.className = "health";
+    healthChip.setAttribute("aria-label", "Recorder health");
+    const healthDot = document.createElement("span");
+    healthDot.className = "hdot";
+    const healthText = document.createElement("span");
+    healthText.className = "htext";
+    const healthSep = document.createElement("span");
+    healthSep.className = "sep";
+    healthSep.textContent = "·";
+    const healthCapture = document.createElement("span");
+    healthCapture.className = "muted";
+    healthChip.append(healthDot, healthText, healthSep, healthCapture);
+
     const startBtn = makeButton("start", "Start");
     const pauseBtn = makeButton("pause", "Pause");
     const stopBtn  = makeButton("stop", "Stop");
 
-    bar.append(phaseLabel, projectChip, startBtn, pauseBtn, stopBtn);
+    bar.append(phaseLabel, projectChip, healthChip, startBtn, pauseBtn, stopBtn);
     root.appendChild(bar);
     container.appendChild(host);
 
@@ -203,9 +232,48 @@ export function mountRecorderToolbar(
             pauseBtn.dataset.action = "pause";
             pauseBtn.disabled = phase !== "Recording";
         }
+
+        renderHealth();
+    }
+
+    function renderHealth(): void {
+        const phase = session.Phase;
+        const stepCount = session.Steps.length;
+        const lastStep = stepCount > 0 ? session.Steps[stepCount - 1] : null;
+        const projectOk = options.ProjectSlug.length > 0;
+
+        let status: "idle" | "ok" | "warn" | "error" = "idle";
+        if (!projectOk) {
+            status = "error";
+        } else if (phase === "Recording") {
+            status = stepCount > 0 ? "ok" : "warn";
+        } else if (phase === "Paused") {
+            status = "warn";
+        } else {
+            status = "idle";
+        }
+        healthChip.dataset.status = status;
+
+        const projectLabel = projectOk ? options.ProjectSlug : "no project";
+        healthText.textContent = `${projectLabel} · ${stepCount} step${stepCount === 1 ? "" : "s"}`;
+
+        if (lastStep === null) {
+            healthCapture.textContent = phase === "Idle" ? "not recording" : "awaiting capture";
+        } else {
+            healthCapture.textContent = `last ${formatRelative(lastStep.CapturedAt, options.Now())}`;
+        }
+
+        healthChip.title =
+            `Project: ${projectLabel}\n` +
+            `Phase: ${phase}\n` +
+            `Steps captured: ${stepCount}\n` +
+            `Last capture: ${lastStep?.CapturedAt ?? "—"}`;
     }
 
     render();
+    const tickInterval = (typeof window !== "undefined")
+        ? window.setInterval(() => { renderHealth(); }, 1000)
+        : 0;
 
     let destroyed = false;
     return {
@@ -219,6 +287,9 @@ export function mountRecorderToolbar(
         Destroy: () => {
             if (destroyed) { return; }
             destroyed = true;
+            if (tickInterval !== 0 && typeof window !== "undefined") {
+                window.clearInterval(tickInterval);
+            }
             host.remove();
         },
     };
@@ -231,4 +302,17 @@ function makeButton(action: "start" | "pause" | "stop", label: string): HTMLButt
     btn.dataset.action = action;
     btn.textContent = label;
     return btn;
+}
+
+function formatRelative(thenIso: string, nowIso: string): string {
+    const then = Date.parse(thenIso);
+    const now = Date.parse(nowIso);
+    if (Number.isNaN(then) || Number.isNaN(now)) { return "just now"; }
+    const deltaSec = Math.max(0, Math.round((now - then) / 1000));
+    if (deltaSec < 5) { return "just now"; }
+    if (deltaSec < 60) { return `${deltaSec}s ago`; }
+    const min = Math.floor(deltaSec / 60);
+    if (min < 60) { return `${min}m ago`; }
+    const hr = Math.floor(min / 60);
+    return `${hr}h ago`;
 }
